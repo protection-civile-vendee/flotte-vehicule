@@ -3,33 +3,209 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Formulaire Ambulance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APC Portal - Protection Civile de Vendée</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #004080;
+            color: #ffffff;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px 0;
+            color: #333;
+        }
+
+        .status p {
+            font-size: 16px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #004080;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .fallback h2 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .store-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .store-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .store-button:hover {
+            opacity: 0.9;
+        }
+
+        .store-button.android {
+            background-color: #34a853;
+            color: #ffffff;
+        }
+
+        .store-button.ios {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .warning-box h3 {
+            font-size: 14px;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.5;
+        }
+    </style>
     <script>
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
-        function redirectToForm() {
-            const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdTPO3KUZl3Hsjal21PcjyMP5MiNnaoPtu4t-4cOyRagrbJ5A/viewform?usp=pp_url";
-            const vehicleField = "entry.1902348226";
-            const dateField = "entry.1069931504";
+        function redirectToApp() {
+            const vehicleId = getQueryParam("vehicle");
 
+            if (!vehicleId) {
+                document.getElementById("status").innerHTML = `
+                    <p>Paramètre véhicule manquant.</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 8px;">
+                        Scannez un QR code valide dans un véhicule.
+                    </p>
+                `;
+                return;
+            }
 
-            var vehicle = getQueryParam("vehicle") || ""; // Changez cette valeur selon le véhicule
-            const now = new Date();
-            const date = now.toISOString().slice(0, 10); // Format YYYY-MM-DD
-            const time = now.toTimeString().slice(0, 5); // Format HH:MM
-            console.log(vehicle, date, time)
-
-            const url = `${baseUrl}&${vehicleField}=${encodeURIComponent(vehicle)}&${dateField}=${encodeURIComponent(date)}+${encodeURIComponent(time)}`;
-            window.location.href = url;
+            const deepLink = `org.protection-civile-vendee.apc-portal://vehicles/${vehicleId}`;
+            window.location.href = deepLink;
         }
     </script>
 </head>
 
-<body onload="redirectToForm()">
-    <p>Redirection vers le formulaire en cours...</p>
+<body onload="redirectToApp()">
+    <div class="container">
+        <div class="header">
+            <h1>APC Portal</h1>
+            <p>Protection Civile de Vendée</p>
+        </div>
+
+        <div class="content">
+            <div class="status" id="status">
+                <div class="spinner"></div>
+                <p>Ouverture de l'application...</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="fallback">
+                <h2>L'application ne s'ouvre pas ?</h2>
+                <div class="store-buttons">
+                    <a href="https://play.google.com/store/apps/details?id=org.protection_civile_vendee.apc_portal"
+                       class="store-button android">
+                        <span>Télécharger sur Google Play</span>
+                    </a>
+                    <a href="https://apps.apple.com/fr/app/apc-portal/id6753089542"
+                       class="store-button ios">
+                        <span>Télécharger sur l'App Store</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>Accès restreint</h3>
+                <p>
+                    Cette application nécessite une invitation.
+                    Contactez un membre du bureau si vous n'avez pas encore de compte.
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
