@@ -150,20 +150,26 @@
         }
 
         function redirectToApp() {
-            const vehicleId = getQueryParam("vehicle");
+            const routes = [
+                { param: "vehicle",         path: "vehicles" },
+                { param: "inventaire-item", path: "inventory-scan" },
+            ];
 
-            if (!vehicleId) {
-                document.getElementById("status").innerHTML = `
-                    <p>Paramètre véhicule manquant.</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 8px;">
-                        Scannez un QR code valide dans un véhicule.
-                    </p>
-                `;
-                return;
+            for (const route of routes) {
+                const value = getQueryParam(route.param);
+                if (value) {
+                    const deepLink = `org.protection-civile-vendee.apc-portal://${route.path}/${value}`;
+                    window.location.href = deepLink;
+                    return;
+                }
             }
 
-            const deepLink = `org.protection-civile-vendee.apc-portal://vehicles/${vehicleId}`;
-            window.location.href = deepLink;
+            document.getElementById("status").innerHTML = `
+                <p>Paramètre manquant.</p>
+                <p style="font-size: 14px; color: #666; margin-top: 8px;">
+                    Scannez un QR code valide.
+                </p>
+            `;
         }
     </script>
 </head>
